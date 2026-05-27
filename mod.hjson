@@ -1,20 +1,18 @@
-#the mod name as displayed in-game
-displayName: "Kotlin Mod Template"
+displayName: "Mindustry Tech Expansion"
 
-#the internal name of your mod
-name: "example-kotlin-mod"
+#the internal name of your mod (used for sprite prefixing)
+name: "mtech"
 
-#your name
 author: "You"
 
 #the fully qualified main class of the mod
-main: "example.ExampleKotlinMod"
+main: "mtech.MtechMod"
 
 #the mod description as seen in the mod dialog
-description: "A Mindustry Kotlin mod template."
+description: "Adds new defense tech and resource refining chains."
 
 #the mod version
 version: 1.0
 
 #the minimum game build required to run this mod
-minGameVersion: 146
+minGameVersion: 157

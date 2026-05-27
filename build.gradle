@@ -1,28 +1,19 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-version '1.0'
-
-buildscript{
-    repositories{
-        mavenCentral()
-    }
-
-    ext{
-        //the build number that this mod is made for
-        mindustryVersion = 'v157.4'
-        kotlinVersion = "2.2.0"
-        sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-        isWindows = System.getProperty("os.name").toLowerCase().contains("windows")
-        modArtifactName = project.name
-    }
-
-    dependencies{
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    }
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "2.3.21"
+    id "kr.lanthanide.mindugradle" version "1.1"
 }
 
-apply plugin: "kotlin"
+version '1.0'
+
+ext {
+    mindustryVersion = 'v157.4'
+    sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+    isWindows = System.getProperty("os.name").toLowerCase().contains("windows")
+    modArtifactName = project.name
+}
 
 sourceSets.main.kotlin.srcDirs = ["src"]
 
@@ -60,6 +51,10 @@ tasks.withType(JavaCompile).configureEach {
     sourceCompatibility = "1.8"
     targetCompatibility = "1.8"
     options.release = 8
+}
+
+mindugradle {
+    jvmArgs.set(["-Xmx2G", "-Xms512M"])
 }
 
 task jarAndroid{
