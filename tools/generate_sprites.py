@@ -44,6 +44,8 @@ COLORS = {
     "plasma-bullet":        (250,  95,  45),
     "mtech-laser":          (190, 215, 255),
     "mtech-laser-end":      (255, 255, 255),
+    "risc-processor":       (100, 180, 220),
+    "risc-processor-top":   (160, 220, 250),
 }
 
 
@@ -227,10 +229,44 @@ def draw_region_icon(name, color, size):
     return img
 
 
+def draw_processor(name, color, size):
+    """Draw a processor: circuit board with chip."""
+    px = size * TILE
+    img = Image.new("RGBA", (px, px), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    cx, cy = px // 2, px // 2
+    # PCB board background
+    board_color = (20, 50, 40)
+    draw.rounded_rectangle([1, 1, px - 2, px - 2], radius=2, fill=board_color)
+    # Circuit traces
+    trace_color = (60, 120, 100)
+    for tx in range(4, px - 4, 6):
+        draw.line([(tx, 4), (tx, px - 4)], fill=trace_color, width=1)
+    for ty in range(4, px - 4, 6):
+        draw.line([(4, ty), (px - 4, ty)], fill=trace_color, width=1)
+    # CPU chip
+    chip_color = (130, 210, 240)
+    draw.rounded_rectangle([cx - 6, cy - 6, cx + 6, cy + 6], radius=2, fill=chip_color)
+    draw.rounded_rectangle([cx - 6, cy - 6, cx + 6, cy + 6], radius=2, outline=(180, 240, 255), width=1)
+    # Chip pins
+    pin_color = (180, 220, 200)
+    for pin_x in [cx - 5, cx - 2, cx + 2, cx + 5]:
+        draw.rectangle([pin_x - 1, cy - 9, pin_x + 1, cy - 7], fill=pin_color)
+        draw.rectangle([pin_x - 1, cy + 7, pin_x + 1, cy + 9], fill=pin_color)
+    for pin_y in [cy - 5, cy - 2, cy + 2, cy + 5]:
+        draw.rectangle([cx - 9, pin_y - 1, cx - 7, pin_y + 1], fill=pin_color)
+        draw.rectangle([cx + 7, pin_y - 1, cx + 9, pin_y + 1], fill=pin_color)
+    # Glow dot
+    draw.ellipse([cx - 2, cy - 2, cx + 2, cy + 2], fill=(200, 240, 255, 200))
+    return img
+
+
 def draw_block(name, color, size):
     """Draw a block: crafters get detailed shapes, others get generic look."""
     if "furnace" in name or "crucible" in name or "compressor" in name or "synthesizer" in name:
         return draw_crafter(name, color, size)
+    if "processor" in name:
+        return draw_processor(name, color, size)
     # generic block
     px = size * TILE
     img = Image.new("RGBA", (px, px), (0, 0, 0, 0))
@@ -393,7 +429,17 @@ def draw_effect(name, color, size):
     draw = ImageDraw.Draw(img)
     cx, cy = px // 2, px // 2
 
-    if "heat" in name or "top" in name:
+    if "processor" in name:
+        # Processor glow
+        draw.ellipse([cx - px // 4, cy - px // 4, cx + px // 4, cy + px // 4], fill=(*color, 80))
+        draw.ellipse([cx - 3, cy - 3, cx + 3, cy + 3], fill=(*brighter(color, 80), 220))
+        # Binary data lines
+        for i, bx in enumerate([cx - 10, cx + 6]):
+            for j in range(3):
+                by = cy - 6 + j * 6
+                draw.line([(bx, by), (bx + (4 if i == 0 else -4), by)], fill=(*color, 180), width=1)
+
+    elif "heat" in name or "top" in name:
         # Glow overlay: radial with pattern matching the block type
         if "piercer" in name:
             # Bright dot with crosshairs
@@ -425,6 +471,11 @@ def draw_effect(name, color, size):
             # Generic glow
             draw.ellipse([cx - px // 4, cy - px // 4, cx + px // 4, cy + px // 4], fill=(*color, 120))
             draw.ellipse([cx - 4, cy - 4, cx + 4, cy + 4], fill=(*brighter(color, 80), 220))
+
+    elif "processor" in name:
+        # Circuit glow overlay
+        draw.ellipse([cx - px // 4, cy - px // 4, cx + px // 4, cy + px // 4], fill=(*color, 100))
+        draw.ellipse([cx - 3, cy - 3, cx + 3, cy + 3], fill=(*brighter(color, 80), 220))
 
     elif "laser" in name:
         if "end" in name:

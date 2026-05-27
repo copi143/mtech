@@ -8,6 +8,8 @@ import mindustry.type.ItemStack
 import mindustry.world.blocks.defense.Wall
 import mindustry.world.blocks.defense.turrets.ItemTurret
 import mindustry.world.blocks.production.GenericCrafter
+import mindustry.world.meta.BuildVisibility
+import mtech.logic.CustomProcessor
 
 object ModBlocks {
     // ====== PRODUCTION CRAFTERS ======
@@ -238,6 +240,20 @@ object ModBlocks {
         hasItems = true
     }
 
+    // ====== LOGIC ======
+
+    val riscProcessor = CustomProcessor("risc-processor").apply {
+        size = 1
+        health = 80
+        instructionsPerTick = 3
+        maxInstructionsPerTick = 60
+        range = 90f
+        buildVisibility = BuildVisibility.shown
+        requirements(Category.logic, ItemStack.with(
+            Items.silicon, 50, Items.lead, 50, Items.copper, 30
+        ))
+    }
+
     fun load() {
         carbideFurnace.load()
         alloyCrucible.load()
@@ -253,5 +269,6 @@ object ModBlocks {
         thunder.load()
         volcano.load()
         annihilator.load()
+        riscProcessor.load()
     }
 }

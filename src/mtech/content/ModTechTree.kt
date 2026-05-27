@@ -9,6 +9,10 @@ object ModTechTree {
         val plastanium = TechTree.all.find { it.content === Blocks.plastaniumCompressor } ?: return
         val phaseWeaver = TechTree.all.find { it.content === Blocks.phaseWeaver } ?: return
         val surgeSmelter = TechTree.all.find { it.content === Blocks.surgeSmelter } ?: return
+        val microProcessor = TechTree.all.find { it.content === Blocks.microProcessor } ?: return
+
+        // RISC Processor (under micro processor)
+        TechNode(microProcessor, ModBlocks.riscProcessor, ModBlocks.riscProcessor.requirements)
 
         // Carbide chain (under plastanium)
         val carbideFurnaceNode = TechNode(plastanium, ModBlocks.carbideFurnace, ModBlocks.carbideFurnace.requirements)
