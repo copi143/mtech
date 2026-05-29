@@ -61,19 +61,20 @@ mindugradle {
 }
 
 tasks.register("jarAndroid") {
+    description = ""
     dependsOn("jar")
 
     doLast {
         if (sdkRoot == null || !File(sdkRoot).exists()) throw GradleException("No valid Android SDK found. Ensure that ANDROID_HOME is set to your Android SDK directory.")
 
-        val platformRoot = File("$sdkRoot/platforms/").listFiles()?.sortedDescending()?.find { File(it, "android.jar").exists() }
-            ?: throw GradleException("No android.jar found. Ensure that you have an Android platform installed.")
+        val platformRoot =
+            File("$sdkRoot/platforms/").listFiles()?.sortedDescending()?.find { File(it, "android.jar").exists() }
+                ?: throw GradleException("No android.jar found. Ensure that you have an Android platform installed.")
 
         val classpathArgs =
             (project.configurations.compileClasspath.get() + project.configurations.runtimeClasspath.get() + listOf(
                 File(
-                    platformRoot,
-                    "android.jar"
+                    platformRoot, "android.jar"
                 )
             )).joinToString(" ") { "--classpath ${it.path}" }
 
@@ -81,7 +82,15 @@ tasks.register("jarAndroid") {
 
         project.exec {
             workingDir = file("${layout.buildDirectory}/libs")
-            commandLine(d8, *classpathArgs.split(" ").toTypedArray(), "--min-api", "14", "--output", "${modArtifactName}Android.jar", "${modArtifactName}Desktop.jar")
+            commandLine(
+                d8,
+                *classpathArgs.split(" ").toTypedArray(),
+                "--min-api",
+                "14",
+                "--output",
+                "${modArtifactName}Android.jar",
+                "${modArtifactName}Desktop.jar"
+            )
         }
     }
 }
@@ -91,8 +100,8 @@ tasks.jar {
     archiveFileName.set("${modArtifactName}Desktop.jar")
 
     from({
-        configurations.runtimeClasspath.map {
-            it.asFileTree
+        configurations.runtimeClasspath.get().map {
+            if (it.isDirectory) it else zipTree(it)
         }
     })
 
@@ -106,6 +115,7 @@ tasks.jar {
 }
 
 tasks.register<Jar>("deploy") {
+    description = ""
     dependsOn("jarAndroid", "jar")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveFileName.set("${modArtifactName}.jar")
