@@ -15,4 +15,4 @@ description: "Adds new defense tech and resource refining chains."
 version: 1.0
 
 #the minimum game build required to run this mod
-minGameVersion: 157
+minGameVersion: 158
